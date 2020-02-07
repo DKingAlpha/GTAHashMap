@@ -1,5 +1,5 @@
-# HashMapDump
-Dump HashMap from Alexander Blade's ScriptHookV.dll
+# GTAHashMap
+GTAHashMap dumped from Alexander Blade's ScriptHookV.dll
 
 # Reversing
 ```
@@ -67,7 +67,7 @@ switch(gameVersion) {
     42,43,44,45     18
     46,47,48,49     19
     50,51,52,53     20
-    54,55           21
+    54,55           21      // 1.0.1868.0 STEAM == 54
 }
 ```
 
