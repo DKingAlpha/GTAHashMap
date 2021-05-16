@@ -6,18 +6,18 @@ GTAHashMap dumped from Alexander Blade's ScriptHookV.dll
 IDA: nativeInit(int64 a1):
     arg a1 is oldHash
     switch(gameVersion_dw)
-    0x1884 is hashinfo count
-    jump table is hashtable
+    0x18D2 is hashinfo count
+    unk/qword referenced by jump table case 2,3 is hashtable
 ```
 
 ```c
 struct hashinfo {
     uint64_t   oldHash;
-    uint64_t   hash[21];
+    uint64_t   hash[24];
 };
 
 struct hashtable {
-    hashinfo[0x1884];
+    hashinfo[0x18D2];
 };
 
 ```
@@ -67,13 +67,16 @@ switch(gameVersion) {
     42,43,44,45     18
     46,47,48,49     19
     50,51,52,53     20
-    54,55           21      // 1.0.1868.0 STEAM == 54
+    54,55,56,57,58      21
+    59,60,61,62,63      22
+    64,65,66,67,68      23
+
 }
 ```
 
 Optimized
 ```c
-static int searchDepth = 21; /* 0 to 21 */
+static int searchDepth = 24; /* 0 to 24 */
 uint64_t newHash = oldHash;
 for (int i = 0; i < fullHashMapCount; i++) {
     bool found = false;
@@ -93,9 +96,9 @@ for (int i = 0; i < fullHashMapCount; i++) {
 from idaapi import *
 import json
 
-g_hashtable = 0x18002BDD0
-g_hashinfo_count = 0x1884
-g_hash_count = 22
+g_hashtable = 0x18002D730
+g_hashinfo_count = 0x18D2
+g_hash_count = 24
 
 def ReadHashInfo(ea, hash_count):
     return [get_64bit(ea + i*8) for i in range(0, hash_count) ]
