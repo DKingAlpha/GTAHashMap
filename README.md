@@ -110,6 +110,7 @@ hashtable = ReadHashTable(g_hashtable, g_hashinfo_count, g_hash_count)
 
 with open('D:/hashmap.h', 'w') as outfile:
     content = '''
+#pragma once
 #include <stdint.h>
 
 #define fullHashMapCount %d
@@ -127,4 +128,56 @@ uint64_t fullHashMap[fullHashMapCount][fullHashMapDepth] = {
     content += '\n};\n\n'
     outfile.write(content)
 
+```
+
+
+```python
+from idaapi import *
+import json
+
+# qword_18002AE20 in worldGetAllPickups has max offset 
+# __int64 __fastcall worldGetAllPickups(int *a1, int a2)
+# {
+# // [COLLAPSED LOCAL DECLARATIONS. PRESS KEYPAD CTRL-"+" TO EXPAND]# 
+#  v3 = gameVer;
+#  v4 = 0;
+#  v5 = a2;
+#  v6 = *(_QWORD *)(qword_18015FAA0 + qword_18002AE20[v3 + 966]);
+#  v7 = (__int64 (*)(void))(qword_18015FAA0 + qword_18002AE20[v3 + 897]);
+#  v8 = *(_QWORD *)(qword_18015FAA0 + qword_18002AE20[v3 + 1242]);
+
+g_addr_table = 0x18002AE20
+game_version_count = 69
+g_addr_count = 1242 + game_version_count  # qword_18002AE20 max offset + game_version_count
+
+assert g_addr_count % game_version_count == 0
+addr_type_count = int(g_addr_count / game_version_count)
+
+def ReadAddrInfo(ea, addr_count):
+    return [get_64bit(ea + i*8) for i in range(0, addr_count) ]
+
+addr_table = ReadAddrInfo(g_addr_table, g_addr_count)
+
+with open('D:/addrtable.h', 'w') as outfile:
+    content = '''
+#pragma once
+#include <stdint.h>
+
+#define addrTypeCount %d
+#define addrVerCount %d
+
+uint64_t fullAddrTable[addrTypeCount][addrVerCount] = {
+''' % (addr_type_count, game_version_count)
+    count = 0
+    for h in addr_table:
+        if count % game_version_count == 0:
+            content += '    { '
+        item = "0x%X, " % h
+        if count % game_version_count != game_version_count-1:
+            content += item
+        else:
+            content += item[:-2] + ' },\n'
+        count += 1
+    content += '};\n'
+    outfile.write(content)
 ```
